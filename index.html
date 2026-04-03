@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Супермаркет</title>
+
+<style>
+body {margin:0;font-family:Arial;background:#f4f6f8;}
+header {background:#27ae60;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;}
+nav a {color:white;margin:0 10px;text-decoration:none;}
+.search {padding:5px;border:none;border-radius:5px;}
+.container {display:flex;}
+.sidebar {width:200px;background:white;padding:15px;}
+.products {flex:1;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
+.product {background:white;padding:15px;border-radius:10px;text-align:center;}
+button {background:#27ae60;color:white;border:none;padding:8px;border-radius:5px;cursor:pointer;}
+.cart {position:fixed;right:20px;top:80px;width:260px;background:white;padding:15px;border-radius:10px;}
+.hidden {display:none;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>🛒 Супермаркет</h2>
+<nav>
+<a href="#">Басты бет</a>
+<a href="#">Өнімдер</a>
+</nav>
+<input class="search" placeholder="Іздеу..." oninput="search(this.value)">
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+<h3>Категория</h3>
+<p onclick="filter('all')">Барлығы</p>
+<p onclick="filter('fruit')">Жемістер</p>
+<p onclick="filter('bread')">Нан</p>
+<p onclick="filter('milk')">Сүт</p>
+<p onclick="filter('sweet')">Тәттілер</p>
+</div>
+
+<div class="products" id="products"></div>
+
+</div>
+
+<div class="cart">
+<h3>Себет</h3>
+<ul id="cart"></ul>
+<p>Жалпы: <span id="total">0</span> тг</p>
+<button onclick="checkout()">Тапсырыс беру</button>
+<button onclick="clearCart()">Тазалау</button>
+</div>
+
+<div id="order" class="hidden" style="position:fixed;top:20%;left:35%;background:white;padding:20px;border-radius:10px;">
+<h3>Тапсырыс</h3>
+<input placeholder="Атың" id="name"><br><br>
+<input placeholder="Телефон" id="phone"><br><br>
+<button onclick="finish()">Жіберу</button>
+</div>
+
+<script>
+let data = [
+{name:'Алма',price:600,cat:'fruit'},
+{name:'Банан',price:700,cat:'fruit'},
+{name:'Нан',price:200,cat:'bread'},
+{name:'Сүт',price:400,cat:'milk'},
+{name:'Айран',price:350,cat:'milk'},
+{name:'Шоколад',price:800,cat:'sweet'}
+];
+
+let cart = [];
+let total = 0;
+
+function render(list){
+let html='';
+list.forEach(p=>{
+html+=`<div class="product">
+<h3>${p.name}</h3>
+<p>${p.price} тг</p>
+<button onclick="add('${p.name}',${p.price})">Қосу</button>
+</div>`;
+});
+document.getElementById('products').innerHTML=html;
+}
+
+function add(name,price){
+cart.push({name,price});
+total+=price;
+updateCart();
+}
+
+function updateCart(){
+let html='';
+cart.forEach((i,index)=>{
+html+=<li>${i.name} ${i.price} тг <button onclick="remove(${index})">x</button></li>;
+});
+document.getElementById('cart').innerHTML=html;
+document.getElementById('total').innerText=total;
+}
+
+function remove(i){
+total-=cart[i].price;
+cart.splice(i,1);
+updateCart();
+}
+
+function clearCart(){
+cart=[];
+total=0;
+updateCart();
+}
+
+function filter(cat){
+if(cat==='all'){render(data);return;}
+render(data.filter(p=>p.cat===cat));
+}
+
+function search(text){
+render(data.filter(p=>p.name.toLowerCase().includes(text.toLowerCase())));
+}
+
+function checkout(){
+document.getElementById('order').classList.remove('hidden');
+}
+
+function finish(){
+alert('Тапсырыс қабылданды');
+cart=[];
+total=0;
+updateCart();
+document.getElementById('order').classList.add('hidden');
+}
+
+render(data);
+</script>
+
+</body>
+</html>
